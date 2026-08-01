@@ -31,7 +31,7 @@ try:
     while True:
         receivedMessage = getMessage()
         if receivedMessage == "ping":
-            sendMessage(encodeMessage("pong3"))
+            sendMessage(encodeMessage("pussy"))
 except:
     pass
     
