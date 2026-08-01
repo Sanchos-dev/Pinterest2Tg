@@ -1,0 +1,1 @@
+##Pinterest2Tg is just shitty written QOF tool that just trying to work
