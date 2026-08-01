@@ -1,5 +1,4 @@
 {
-  "description": "Pinterest2Tg",
   "manifest_version": 2,
   "name": "Pinterest2Tg",
   "version": "0.1",
@@ -10,9 +9,17 @@
     }
   },
 
-  "background": {
-    "scripts": ["script.js"]
+  "browser_action": {
+    "default_title": "Pinterest2Tg"
   },
 
-  "permissions": ["nativeMessaging", "scripting"]
+  "background": {
+    "scripts": ["background.js"]
+  },
+
+  "permissions": [
+    "nativeMessaging",
+    "*://*.pinterest.com/*",
+    "*://*.pinterest.ru/*"
+  ]
 }

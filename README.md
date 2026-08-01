@@ -1,1 +1,8 @@
 ## Pinterest2Tg is just shitty written QOF tool that just trying to work
+
+to work you need 
+
+
+```mkdir -p ~/.mozilla/native-messaging-hosts/```
+```cp /home/sanchos/Projects/Pinterest2Tg/app/manifest.json ~/.mozilla/native-messaging-hosts/Pinterest2Tg.json```
+```chmod +x /home/sanchos/Projects/Pinterest2Tg/app/main.py```
