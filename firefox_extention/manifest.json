@@ -1,0 +1,18 @@
+{
+  "description": "Pinterest2Tg",
+  "manifest_version": 2,
+  "name": "Pinterest2Tg",
+  "version": "0.1",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "Pinterest2Tg@sanchos.su"
+    }
+  },
+
+  "background": {
+    "scripts": ["script.js"]
+  },
+
+  "permissions": ["nativeMessaging", "scripting"]
+}
