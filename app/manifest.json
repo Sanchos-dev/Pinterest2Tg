@@ -1,0 +1,7 @@
+{
+  "name": "Pinterest2Tg",
+  "description": "Pinterest2Tg",
+  "path": "/home/sanchos/Projects/Pinterest2Tg/app/main.py",
+  "type": "stdio",
+  "allowed_extensions": [ "Pinterest2Tg@sanchos.su" ]
+}
