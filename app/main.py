@@ -30,8 +30,8 @@ try:
 
     while True:
         receivedMessage = getMessage()
-        if receivedMessage == "ping":
-            sendMessage(encodeMessage("pussy"))
+        if "https://" in  receivedMessage:
+            sendMessage(encodeMessage(receivedMessage))
 except:
     pass
     
