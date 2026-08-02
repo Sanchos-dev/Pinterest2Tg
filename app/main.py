@@ -4,6 +4,7 @@ import json
 import struct
 import os
 import urllib.request
+import subprocess
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -19,7 +20,6 @@ def encodeMessage(messageContent):
     encodedContent = json.dumps(messageContent).encode('utf-8')
     encodedLength = struct.pack('@I', len(encodedContent))
     return {'length': encodedLength, 'content': encodedContent}
-
 
 def sendMessage(encodedMessage):
     sys.stdout.buffer.write(encodedMessage['length'])
@@ -37,12 +37,23 @@ def download_media_file(url):
     if "?" in file_name:
         file_name = file_name.split("?")[0]
 
+    if ".m3u8" in file_name or ".m3u8" in url:
+        if ".m3u8" in file_name:
+            mp4_file_name = file_name.replace(".m3u8", ".mp4")
+        else:
+            mp4_file_name = "video.mp4"
+
+        full_save_path = media_folder + "/" + mp4_file_name
+
+        cmd = ["ffmpeg", "-y", "-i", url, "-c", "copy", full_save_path]
+        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+        return mp4_file_name
+
     full_save_path = media_folder + "/" + file_name
 
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-
     response = urllib.request.urlopen(req)
-
     data = response.read()
 
     f = open(full_save_path, "wb")
