@@ -17,6 +17,16 @@
     "scripts": ["background.js"]
   },
 
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.pinterest.com/*",
+        "*://*.pinterest.ru/*"
+      ],
+      "js": ["content.js"]
+    }
+  ],
+
   "permissions": [
     "nativeMessaging",
     "*://*.pinterest.com/*",
