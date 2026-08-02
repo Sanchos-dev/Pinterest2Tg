@@ -1,0 +1,5 @@
+app/media/
+app/error.log
+/tmp/pinterest_app.log
+__pycache__/
+*.pyc
