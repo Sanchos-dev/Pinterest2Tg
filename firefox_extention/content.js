@@ -1,45 +1,32 @@
 function injectDownloadButton() {
     if (document.getElementById("p2tg-dwn-btn")) return;
-
     let video = document.querySelector('video[data-test-id="duplo-hls-video"]')
              || document.querySelector('video');
-
     let isVideo = !!video;
     let targetContainer = null;
     let likeBtn = null;
-
     if (isVideo) {
-        likeBtn = document.querySelector('button[data-test-id="react-button"]')
-               || document.querySelector('button[aria-label="Отреагировать"]')
-               || document.querySelector('button[aria-label*="реакц"]')
-               || document.querySelector('button[aria-label*="React"]');
-
+        likeBtn = document.querySelector('button[data-test-id="react-button"]');
         if (!likeBtn) return;
         targetContainer = likeBtn.parentElement;
     } else {
         let img = document.querySelector('img[elementtiming="StoryPinImageBlock-MainPinImage"]')
                || document.querySelector('img.iFOUS5');
-
         if (!img) return;
-
         targetContainer = img.closest('[data-test-id="pin-closeup-image"]')
                        || img.closest('[data-test-id="story-pin-component"]')
                        || img.closest('[data-test-id="story-pin-main-container"]')
                        || img.parentElement;
-
         if (!targetContainer) return;
-
         let currentPos = window.getComputedStyle(targetContainer).position;
         if (currentPos === 'static') {
             targetContainer.style.position = 'relative';
         }
     }
-
     let btn = document.createElement("button");
     btn.id = "p2tg-dwn-btn";
     btn.innerText = "tg";
     btn.type = "button";
-
     if (isVideo) {
         Object.assign(btn.style, {
             backgroundColor: '#e60023',
@@ -76,16 +63,13 @@ function injectDownloadButton() {
             pointerEvents: 'auto'
         });
     }
-
     btn.onmouseover = () => btn.style.transform = 'scale(1.04)';
     btn.onmouseout = () => btn.style.transform = 'scale(1)';
 
     btn.onclick = (e) => {
         e.stopPropagation();
         e.preventDefault();
-
         let mediaUrl = null;
-
         if (isVideo) {
             let source = video.querySelector('source');
             if (source && source.src && source.src.startsWith('http')) {
@@ -109,7 +93,6 @@ function injectDownloadButton() {
                 mediaUrl = img.src;
             }
         }
-
         if (mediaUrl) {
             btn.innerText = "Sending...";
             btn.style.backgroundColor = "#555";
@@ -123,25 +106,21 @@ function injectDownloadButton() {
                 }, 2000);
             });
         } else {
-            alert("Медиафайл не найден!");
+            alert("No Media!");
         }
     };
-
     if (isVideo && likeBtn) {
         targetContainer.insertBefore(btn, likeBtn);
     } else {
         targetContainer.appendChild(btn);
     }
 }
-
 const observer = new MutationObserver(() => {
     injectDownloadButton();
 });
-
 observer.observe(document.body, {
     childList: true,
     subtree: true
 });
-
 injectDownloadButton();
 setInterval(injectDownloadButton, 500);
