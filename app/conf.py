@@ -1,1 +1,2 @@
 JustSave = False
+TgClient = "ayugram"

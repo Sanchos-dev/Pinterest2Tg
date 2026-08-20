@@ -1,2 +1,0 @@
-JustSave = False
-TgClient = "ayugram"
