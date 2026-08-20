@@ -6,6 +6,10 @@ import os
 import urllib.request
 import subprocess
 import keyboard
+import conf.py as conf
+import mimetypes
+from pathlib import Path
+import subprocess
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -13,9 +17,28 @@ def SetActiveWindow(app_class_regex: str):
     cmd = f'hl.dsp.focus({{ window = "class:^({app_class_regex})$" }})'
     subprocess.run(["hyprctl", "dispatch", cmd], check=True)
 
-def getPictureInClipboard(Path):
-    pass
+def SetPictureInClipboard(file_path: str | Path) -> None:
+    path = Path(file_path).resolve()
+    if not path.is_file():
+        raise FileNotFoundError(f"Файл не найден: {path}")
+    mime_type, _ = mimetypes.guess_type(path)
+    if not mime_type:
+        ext = path.suffix.lower()
+        if ext == ".mp4":
+            mime_type = "video/mp4"
+        elif ext in [".png", ".jpg", ".jpeg", ".webp"]:
+            mime_type = f"image/{ext.lstrip('.')}"
+        else:
+            mime_type = "application/octet-stream"
+    with open(path, "rb") as f:
+        subprocess.run(["wl-copy", "--type", mime_type], stdin=f, check=True)
 
+def p2tg(filepath):
+
+    SetActiveWindow(conf.TgClient)
+    SetPictureInClipboard(filepath)
+    keyboard.press_and_release('ctrl+v')
+    SetActiveWindow("firefox")
 
 def getMessage():
     rawLength = sys.stdin.buffer.read(4)
@@ -80,6 +103,11 @@ while True:
                 saved_file_name = download_media_file(received_data)
                 ans = "Saved: " + str(saved_file_name)
                 sendMessage(encodeMessage(ans))
+                if conf.JustSave == True:
+                    pass
+                else:
+                    p2tg(f"{current_dir}/media/{saved_file_name}]")
+
     except Exception as err:
         log_file = open(current_dir + "/error.log", "a")
         log_file.write("Error happened: " + str(err) + "\n")
