@@ -17,19 +17,60 @@ from pathlib import Path
 import conf
 
 
-def SetActiveWindow(app_class_regex: str):
+def fix_wayland_env():
+    if "XDG_RUNTIME_DIR" not in os.environ:
+        os.environ["XDG_RUNTIME_DIR"] = f"/run/user/{os.getuid()}"
+
+    xdg_dir = os.environ["XDG_RUNTIME_DIR"]
+
+    if "WAYLAND_DISPLAY" not in os.environ and os.path.exists(xdg_dir):
+        for f in os.listdir(xdg_dir):
+            if f.startswith("wayland-") and not f.endswith(".lock"):
+                os.environ["WAYLAND_DISPLAY"] = f
+                break
+
+    if "HYPRLAND_INSTANCE_SIGNATURE" not in os.environ:
+        hypr_paths = [os.path.join(xdg_dir, "hypr"), "/tmp/hypr"]
+        for hp in hypr_paths:
+            if os.path.exists(hp):
+                instances = [
+                    d for d in os.listdir(hp)
+                    if os.path.exists(os.path.join(hp, d, ".socket.sock"))
+                ]
+                if instances:
+                    instances.sort(key=lambda x: os.path.getmtime(os.path.join(hp, x)), reverse=True)
+                    os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = instances[0]
+                    break
+
+
+def SetActiveWindow(app_name: str) -> bool:
     try:
-        subprocess.run(
-            ["hyprctl", "dispatch", "focuswindow", f"class:^({app_class_regex})$"],
-            check=False,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
+        fix_wayland_env()
+        cmd = f'hl.dsp.focus({{ window = "class:.*{app_name}.*" }})'
+        res = subprocess.run(
+            ["hyprctl", "dispatch", cmd],
+            capture_output=True,
+            text=True
         )
+        if res.returncode != 0:
+            cmd2 = f'hl.dsp.focus({{ window = "class:{app_name}" }})'
+            res2 = subprocess.run(
+                ["hyprctl", "dispatch", cmd2],
+                capture_output=True,
+                text=True
+            )
+            if res2.returncode != 0:
+                err_msg = res.stderr.strip() or res.stdout.strip() or res2.stderr.strip()
+                log_error(f"Hyprctl focus failed for '{app_name}': {err_msg}")
+                return False
+        return True
     except Exception as e:
         log_error(f"Focus error: {e}")
+        return False
 
 
 def SetPictureInClipboard(file_path: str | Path) -> None:
+    fix_wayland_env()
     path = Path(file_path).resolve()
     if not path.is_file():
         raise FileNotFoundError(f"File not found: {path}")
@@ -49,6 +90,7 @@ def SetPictureInClipboard(file_path: str | Path) -> None:
 
 
 def send_paste_shortcut():
+    fix_wayland_env()
     try:
         subprocess.run(["wtype", "-M", "ctrl", "v", "-m", "ctrl"], check=True)
     except FileNotFoundError:
@@ -59,17 +101,14 @@ def send_paste_shortcut():
 
 
 def p2tg(filepath: str):
-    tg_class = getattr(conf, "TgClient", "org.telegram.desktop")
+    tg_class = getattr(conf, "TgClient", "ayugram")
     SetActiveWindow(tg_class)
-    time.sleep(0.2)
+    time.sleep(0.3)
 
     SetPictureInClipboard(filepath)
-    time.sleep(0.15)
-
-    send_paste_shortcut()
     time.sleep(0.2)
 
-    SetActiveWindow("firefox")
+    send_paste_shortcut()
 
 
 def read_exact_bytes(stream, num_bytes):
