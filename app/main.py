@@ -5,8 +5,17 @@ import struct
 import os
 import urllib.request
 import subprocess
+import keyboard
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
+
+def SetActiveWindow(app_class_regex: str):
+    cmd = f'hl.dsp.focus({{ window = "class:^({app_class_regex})$" }})'
+    subprocess.run(["hyprctl", "dispatch", cmd], check=True)
+
+def getPictureInClipboard(Path):
+    pass
+
 
 def getMessage():
     rawLength = sys.stdin.buffer.read(4)

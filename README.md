@@ -1,3 +1,5 @@
+##WIP
+
 ## Pinterest2Tg is just shitty written QOL tool that just trying to work
 
 to work you need 
