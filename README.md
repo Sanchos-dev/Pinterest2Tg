@@ -12,3 +12,4 @@ to work you need
 ```chmod +x /home/sanchos/Projects/Pinterest2Tg/app/main.py```
 
 and then you add extention to firefox in about:debugging#/runtime/this-firefox
+bleb
